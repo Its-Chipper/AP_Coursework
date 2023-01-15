@@ -249,24 +249,24 @@ void particleSet::update(int ms)
   -----------------------------------------------------------*/
 void table::SetupEdges(void)
 {
-	cushions[0].vertices[0](0) = -TABLE_X;
+	cushions[0].vertices[0](0) = -yScale;
 	cushions[0].vertices[0](1) = -10;
-	cushions[0].vertices[1](0) = -TABLE_X;
+	cushions[0].vertices[1](0) = -yScale;
 	cushions[0].vertices[1](1) = 1;
 
-	cushions[1].vertices[0](0) = -TABLE_X;
+	cushions[1].vertices[0](0) = -yScale;
 	cushions[1].vertices[0](1) = 1;
-	cushions[1].vertices[1](0) = TABLE_X;
+	cushions[1].vertices[1](0) = yScale;
 	cushions[1].vertices[1](1) = 1;
 
-	cushions[2].vertices[0](0) = TABLE_X;
+	cushions[2].vertices[0](0) = yScale;
 	cushions[2].vertices[0](1) = 1;
-	cushions[2].vertices[1](0) = TABLE_X;
+	cushions[2].vertices[1](0) = yScale;
 	cushions[2].vertices[1](1) = -10;
 
-	cushions[3].vertices[0](0) = TABLE_X;
+	cushions[3].vertices[0](0) = yScale;
 	cushions[3].vertices[0](1) = -10;
-	cushions[3].vertices[1](0) = -TABLE_X;
+	cushions[3].vertices[1](0) = -yScale;
 	cushions[3].vertices[1](1) = -10;
 
 	for (int i = 0; i < NUM_CUSHIONS; i++)
@@ -278,8 +278,15 @@ void table::SetupEdges(void)
 
 void table::SetupFeatures(void) {
 	features[0] = new line(vec2(-yScale, -12 * TABLE_SCALE), vec2(yScale, -12 * TABLE_SCALE)); // hog line definition
-
+	hogLine = -12 * TABLE_SCALE;
 	features[1] = new line(vec2(-yScale, -17 * TABLE_SCALE), vec2(yScale, -17 * TABLE_SCALE)); // hack line definition
+	hackLine = -17 * TABLE_SCALE;
+
+	scoreCenter = vec2(0, -15 * TABLE_SCALE);
+	features[2] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE/10);
+	features[3] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE/3);
+	features[4] = new ring(vec2(0, -15 * TABLE_SCALE), (2*TABLE_SCALE)/3);
+	features[5] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE);
 }
 
 void table::Update(int ms)
@@ -321,8 +328,15 @@ bool table::AnyBallsMoving(void) const
 }
 
 void table::CheckStones(void){
-	for (int i = 0; i < stoneCount; i++) {
-
+	for (int i = stoneCount - 1; i >= 0; i--) {
+		if (stones[i].position(1) > hogLine) {
+			stones.erase(stones.begin() + i);
+			stoneCount--;
+		}
+		else if (stones[i].position(1) < hackLine) {
+			stones.erase(stones.begin() + i);
+			stoneCount--;
+		}
 	}
 }
 
@@ -331,9 +345,25 @@ void table::AddBall(void) {
 	stoneCount += 1;
 }
 
-line::line(vec2 vertex1, vec2 vertex2){
-	vertices[0] = vertex1;
-	vertices[1] = vertex2;
+int table::GetScores(void) {
+	std::map<int,std::vector<float>> scoreDict;
+	int returnValue = 0;
+	for (int i = 0; i < stoneCount; i++) {
+		float score = pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2);
+		scoreDict[stones[i].team].push_back(sqrt(score));
+		if (sqrt(score) < TABLE_SCALE) returnValue++;
+	}
+	return returnValue;
+}
+
+line::line(vec2 _vertex1, vec2 _vertex2){
+	vertices[0] = _vertex1;
+	vertices[1] = _vertex2;
+}
+
+ring::ring(vec2 _center, float _rad) {
+	center = _center;
+	rad = _rad;
 }
 
 

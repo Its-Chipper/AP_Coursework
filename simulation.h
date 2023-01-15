@@ -3,6 +3,7 @@
   -----------------------------------------------------------*/
 #include"vecmath.h"
 #include <vector>
+#include <map>
 
   /*-----------------------------------------------------------
 	Macros
@@ -52,6 +53,7 @@ class stone
 {
 	static int ballIndexCnt;
 public:
+	int		team;
 	vec2	position;
 	vec2	velocity;
 	float	radius;
@@ -114,7 +116,7 @@ public:
 class feature
 {
 public:
-	virtual int FeatureType() = 0; //returns an int in reference to the type of feature 0 line 1 ring
+	virtual int FeatureType() = 0; //to use the dynaic cast a polymorphic function is required and as i can't draw outside of the poolgame file this will take its place
 };
 
 class line : public feature
@@ -131,7 +133,9 @@ class ring : public feature
 {
 public:
 	vec2 center;
-	float innerRad, outerRad;
+	float rad;
+
+	ring(vec2, float);
 
 	int FeatureType() { return 1; };
 };
@@ -142,13 +146,14 @@ public:
 class table
 {
 public:
-	float yScale = (7 / 5) * TABLE_SCALE;
+	float yScale = (7.0f / 5.0f) * TABLE_SCALE;
 	int stoneCount = 0;
 	std::vector<stone> stones;
 	cushion cushions[NUM_CUSHIONS];
 	feature* features[NUM_FEATURES];
 	particleSet parts;
 	float hogLine, hackLine;
+	vec2 scoreCenter;
 
 	void SetupEdges(void);
 	void SetupFeatures(void);
@@ -156,6 +161,7 @@ public:
 	bool AnyBallsMoving(void) const;
 	void AddBall(void);
 	void CheckStones(void);
+	int GetScores(void);
 };
 
 /*-----------------------------------------------------------

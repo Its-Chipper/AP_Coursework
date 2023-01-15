@@ -126,6 +126,26 @@ void DoCamera(int ms)
 	}
 }
 
+void CamSetLoc(vec3 _position, vec3 _lookat) {
+	gCamPos = _position;
+	gCamLookAt = _lookat;
+}
+
+void DrawCircle(float cx, float cy, float r, int num_segments)
+{
+	glBegin(GL_LINE_LOOP);
+	for (int seg = 0; seg < num_segments; seg++)
+	{
+		float theta = 2.0f * 3.1415926f * float(seg) / float(num_segments);//get the current angle
+
+		float x = r * cosf(theta);//calculate the x component
+		float y = r * sinf(theta);//calculate the y component
+
+		glVertex3f(x + cx, 0.0, y + cy);//output vertex
+	}
+	glEnd();
+}
+
 
 void RenderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,7 +162,7 @@ void RenderScene(void) {
 		glTranslatef(gTable.stones[i].position(0), (BALL_RADIUS / 2.0), gTable.stones[i].position(1));
 		glScalef(1.0, 0.3, 1.0);
 #if DRAW_SOLID
-		glutSolidSphere(gTable.stones[i].radius, 32, 32);//32
+		glutSolidSphere(gTable.stones[i].radius, 32, 32);
 #else
 		glutWireSphere(gTable.balls[i].radius, 12, 12);
 #endif
@@ -154,7 +174,6 @@ void RenderScene(void) {
 	//draw the table
 	for (int i = 0; i < NUM_CUSHIONS; i++)
 	{
-		std::cout << gTable.cushions[i].vertices[0](1) << std::endl;
 		glBegin(GL_LINE_LOOP);
 		glVertex3f(gTable.cushions[i].vertices[0](0), 0.0, gTable.cushions[i].vertices[0](1));
 		glVertex3f(gTable.cushions[i].vertices[0](0), 0.1, gTable.cushions[i].vertices[0](1));
@@ -166,16 +185,15 @@ void RenderScene(void) {
 	for (int i = 0; i < NUM_FEATURES; i++) 
 	{
 		if (line* x = dynamic_cast<line*>(gTable.features[i])) {
-			std::cout << x->vertices[0](1) << std::endl;
 			glBegin(GL_LINE_LOOP);
 			glVertex3f(x->vertices[0](0), 0.0, x->vertices[0](1));
-			glVertex3f(x->vertices[0](0), 0.1, x->vertices[0](1));
-			glVertex3f(x->vertices[1](0), 0.1, x->vertices[1](1));
+			//glVertex3f(x->vertices[0](0), 0.1, x->vertices[0](1));
+			//glVertex3f(x->vertices[1](0), 0.1, x->vertices[1](1));
 			glVertex3f(x->vertices[1](0), 0.0, x->vertices[1](1));
 			glEnd();
 		}
-		else {
-
+		else if(ring * x = dynamic_cast<ring*>(gTable.features[i])) {
+			DrawCircle(x->center(0), x->center(1), x->rad, 30);
 		}
 	}
 
@@ -432,10 +450,18 @@ void InitLights(void)
 void UpdateScene(int ms)
 {
 	if (gTable.AnyBallsMoving() == false) {
-		if (gDoCue == false) gTable.AddBall();
+		if (gDoCue == false) {
+			gTable.CheckStones();
+			std::cout << gTable.GetScores() << std::endl;
+			gTable.AddBall();
+		}
 		gDoCue = true;
+		CamSetLoc(vec3(0.0, 1, 2.1), vec3(0.0, 0.0, 0.0));
 	}
-	else gDoCue = false;
+	else {
+		gDoCue = false;
+		CamSetLoc(vec3(0.0, 5, -15 * TABLE_SCALE), vec3(0.0, 0.0, -7));
+	}
 
 	if (gDoCue)
 	{
