@@ -247,27 +247,34 @@ void particleSet::update(int ms)
 /*-----------------------------------------------------------
   table class members
   -----------------------------------------------------------*/
+table::table() {
+	sheetPosition = pow(-1, _sheetCount) * ceil(_sheetCount / 2);
+	_sheetCount++;
+	SetupEdges();
+	SetupFeatures();
+}
+
 void table::SetupEdges(void)
 {
-	cushions[0].vertices[0](0) = -yScale;
-	cushions[0].vertices[0](1) = -10;
-	cushions[0].vertices[1](0) = -yScale;
-	cushions[0].vertices[1](1) = 1;
+	cushions[0].vertices[0](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[0].vertices[0](1) = -18 * TABLE_SCALE;
+	cushions[0].vertices[1](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[0].vertices[1](1) = 2 * TABLE_SCALE;
 
-	cushions[1].vertices[0](0) = -yScale;
-	cushions[1].vertices[0](1) = 1;
-	cushions[1].vertices[1](0) = yScale;
-	cushions[1].vertices[1](1) = 1;
+	cushions[1].vertices[0](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[1].vertices[0](1) = 2 * TABLE_SCALE;
+	cushions[1].vertices[1](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[1].vertices[1](1) = 2 * TABLE_SCALE;
 
-	cushions[2].vertices[0](0) = yScale;
-	cushions[2].vertices[0](1) = 1;
-	cushions[2].vertices[1](0) = yScale;
-	cushions[2].vertices[1](1) = -10;
+	cushions[2].vertices[0](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[2].vertices[0](1) = 2 * TABLE_SCALE;
+	cushions[2].vertices[1](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[2].vertices[1](1) = -18 * TABLE_SCALE;
 
-	cushions[3].vertices[0](0) = yScale;
-	cushions[3].vertices[0](1) = -10;
-	cushions[3].vertices[1](0) = -yScale;
-	cushions[3].vertices[1](1) = -10;
+	cushions[3].vertices[0](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[3].vertices[0](1) = -18 * TABLE_SCALE;
+	cushions[3].vertices[1](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[3].vertices[1](1) = -18 * TABLE_SCALE;
 
 	for (int i = 0; i < NUM_CUSHIONS; i++)
 	{
@@ -277,9 +284,9 @@ void table::SetupEdges(void)
 }
 
 void table::SetupFeatures(void) {
-	features[0] = new line(vec2(-yScale, -12 * TABLE_SCALE), vec2(yScale, -12 * TABLE_SCALE)); // hog line definition
+	features[0] = new line(vec2(sheetPosition * yScale * 3 - yScale, -12 * TABLE_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -12 * TABLE_SCALE)); // hog line definition
 	hogLine = -12 * TABLE_SCALE;
-	features[1] = new line(vec2(-yScale, -17 * TABLE_SCALE), vec2(yScale, -17 * TABLE_SCALE)); // hack line definition
+	features[1] = new line(vec2(sheetPosition * yScale * 3 - yScale, -17 * TABLE_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -17 * TABLE_SCALE)); // hack line definition
 	hackLine = -17 * TABLE_SCALE;
 
 	scoreCenter = vec2(0, -15 * TABLE_SCALE);
@@ -316,7 +323,7 @@ void table::Update(int ms)
 	//parts.AddParticle(pos);
 }
 
-bool table::AnyBallsMoving(void) const
+bool table::AnyStoneMoving(void) const
 {
 	//return true if any ball has a non-zero velocity
 	for (int i = 0; i < stoneCount; i++)
@@ -340,18 +347,18 @@ void table::CheckStones(void){
 	}
 }
 
-void table::AddBall(void) {
+void table::AddStone(void) {
 	stones.push_back(stone());
 	stoneCount += 1;
 }
 
 int table::GetScores(void) {
-	std::map<int,std::vector<float>> scoreDict;
+	std::map<team,std::vector<float>> scoreDict;
 	int returnValue = 0;
 	for (int i = 0; i < stoneCount; i++) {
-		float score = pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2);
-		scoreDict[stones[i].team].push_back(sqrt(score));
-		if (sqrt(score) < TABLE_SCALE) returnValue++;
+		float score = sqrt(pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2));
+		scoreDict[stones[i].team].push_back(score);
+		if (score < _tableScale) returnValue++;
 	}
 	return returnValue;
 }
@@ -366,5 +373,9 @@ ring::ring(vec2 _center, float _rad) {
 	rad = _rad;
 }
 
+
+void team::AddPlayer(player _player) {
+	players.push_back(_player);
+}
 
 

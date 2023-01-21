@@ -3,17 +3,17 @@
 
 #include "stdafx.h"
 #include "stdafx.h"
-#include"simulation.h"
-#include<glut.h>
-#include<math.h>
+#include "simulation.h"
+#include <glut.h>
+#include <math.h>
 #include <iostream>
 
 //cue variables
 float gCueAngle = 0.0;
 float gCuePower = 0.25;
 bool gCueControl[4] = { false,false,false,false };
-float gCueAngleSpeed = 2.0f; //radians per second
-float gCuePowerSpeed = 0.25f;
+float gCueAngleSpeed = 1.0f; //radians per second
+float gCuePowerSpeed = 0.15f;
 float gCuePowerMax = 0.75;
 float gCuePowerMin = 0.1;
 float gCueBallFactor = 8.0;
@@ -31,6 +31,8 @@ bool gCamU = false;
 bool gCamD = false;
 bool gCamZin = false;
 bool gCamZout = false;
+
+std::vector<table> tables;
 
 //rendering options
 #define DRAW_SOLID	(1)
@@ -156,58 +158,60 @@ void RenderScene(void) {
 
 	//draw the ball
 	glColor3f(1.0, 1.0, 1.0);
-	for (int i = 0; i < gTable.stoneCount; i++)
-	{
-		glPushMatrix();
-		glTranslatef(gTable.stones[i].position(0), (BALL_RADIUS / 2.0), gTable.stones[i].position(1));
-		glScalef(1.0, 0.3, 1.0);
-#if DRAW_SOLID
-		glutSolidSphere(gTable.stones[i].radius, 32, 32);
-#else
-		glutWireSphere(gTable.balls[i].radius, 12, 12);
-#endif
-		glPopMatrix();
-		glColor3f(0.0, 0.0, 1.0);
-	}
-	glColor3f(1.0, 1.0, 1.0);
+	for (int tab = 0; tab < tables[0].returnSheetCount(); tab++) {
+		for (int i = 0; i < tables[tab].stoneCount; i++)
+		{
+			glPushMatrix();
+			glTranslatef(tables[tab].stones[i].position(0), (BALL_RADIUS / 2.0), tables[tab].stones[i].position(1));
+			glScalef(1.0, 0.3, 1.0);
+	#if DRAW_SOLID
+			glutSolidSphere(tables[tab].stones[i].radius, 32, 32);
+	#else
+			glutWireSphere(tables[tab].balls[i].radius, 12, 12);
+	#endif
+			glPopMatrix();
+			glColor3f(0.0, 0.0, 1.0);
+		}
+		glColor3f(1.0, 1.0, 1.0);
 
-	//draw the table
-	for (int i = 0; i < NUM_CUSHIONS; i++)
-	{
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(gTable.cushions[i].vertices[0](0), 0.0, gTable.cushions[i].vertices[0](1));
-		glVertex3f(gTable.cushions[i].vertices[0](0), 0.1, gTable.cushions[i].vertices[0](1));
-		glVertex3f(gTable.cushions[i].vertices[1](0), 0.1, gTable.cushions[i].vertices[1](1));
-		glVertex3f(gTable.cushions[i].vertices[1](0), 0.0, gTable.cushions[i].vertices[1](1));
-		glEnd();
-	}
-
-	for (int i = 0; i < NUM_FEATURES; i++) 
-	{
-		if (line* x = dynamic_cast<line*>(gTable.features[i])) {
+		//draw the table
+		for (int i = 0; i < NUM_CUSHIONS; i++)
+		{
 			glBegin(GL_LINE_LOOP);
-			glVertex3f(x->vertices[0](0), 0.0, x->vertices[0](1));
-			//glVertex3f(x->vertices[0](0), 0.1, x->vertices[0](1));
-			//glVertex3f(x->vertices[1](0), 0.1, x->vertices[1](1));
-			glVertex3f(x->vertices[1](0), 0.0, x->vertices[1](1));
+			glVertex3f(tables[tab].cushions[i].vertices[0](0), 0.0, tables[tab].cushions[i].vertices[0](1));
+			glVertex3f(tables[tab].cushions[i].vertices[0](0), 0.1, tables[tab].cushions[i].vertices[0](1));
+			glVertex3f(tables[tab].cushions[i].vertices[1](0), 0.1, tables[tab].cushions[i].vertices[1](1));
+			glVertex3f(tables[tab].cushions[i].vertices[1](0), 0.0, tables[tab].cushions[i].vertices[1](1));
 			glEnd();
 		}
-		else if(ring * x = dynamic_cast<ring*>(gTable.features[i])) {
-			DrawCircle(x->center(0), x->center(1), x->rad, 30);
-		}
-	}
 
-	for (int i = 0; i < gTable.parts.num; i++)
-	{
-		glColor3f(1.0, 0.0, 0.0);
-		glPushMatrix();
-		glTranslatef(gTable.parts.particles[i]->position(0), gTable.parts.particles[i]->position(1), gTable.parts.particles[i]->position(2));
-#if DRAW_SOLID
-		glutSolidSphere(0.002f, 32, 32);
-#else
-		glutWireSphere(0.002f, 12, 12);
-#endif
-		glPopMatrix();
+		for (int i = 0; i < NUM_FEATURES; i++) 
+		{
+			if (line* x = dynamic_cast<line*>(tables[tab].features[i])) {
+				glBegin(GL_LINE_LOOP);
+				glVertex3f(x->vertices[0](0), 0.0, x->vertices[0](1));
+				//glVertex3f(x->vertices[0](0), 0.1, x->vertices[0](1));
+				//glVertex3f(x->vertices[1](0), 0.1, x->vertices[1](1));
+				glVertex3f(x->vertices[1](0), 0.0, x->vertices[1](1));
+				glEnd();
+			}
+			else if (ring* x = dynamic_cast<ring*>(tables[tab].features[i])) {
+				DrawCircle(x->center(0), x->center(1), x->rad, 30);
+			}
+		}
+
+		for (int i = 0; i < tables[tab].parts.num; i++)
+		{
+			glColor3f(1.0, 0.0, 0.0);
+			glPushMatrix();
+			glTranslatef(tables[tab].parts.particles[i]->position(0), tables[tab].parts.particles[i]->position(1), tables[tab].parts.particles[i]->position(2));
+	#if DRAW_SOLID
+			glutSolidSphere(0.002f, 32, 32);
+	#else
+			glutWireSphere(0.002f, 12, 12);
+	#endif
+			glPopMatrix();
+		}
 	}
 	/*
 	glBegin(GL_LINE_LOOP);
@@ -237,8 +241,8 @@ void RenderScene(void) {
 		float cuex = sin(gCueAngle) * gCuePower;
 		float cuez = cos(gCueAngle) * gCuePower;
 		glColor3f(1.0, 0.0, 0.0);
-		glVertex3f(gTable.stones[gTable.stoneCount - 1].position(0), (BALL_RADIUS / 2.0f), gTable.stones[gTable.stoneCount - 1].position(1));
-		glVertex3f((gTable.stones[gTable.stoneCount - 1].position(0) + cuex), (BALL_RADIUS / 2.0f), (gTable.stones[gTable.stoneCount - 1].position(1) + cuez));
+		glVertex3f(tables[0].stones[tables[0].stoneCount - 1].position(0), (BALL_RADIUS / 2.0f), tables[0].stones[tables[0].stoneCount - 1].position(1));
+		glVertex3f((tables[0].stones[tables[0].stoneCount - 1].position(0) + cuex), (BALL_RADIUS / 2.0f), (tables[0].stones[tables[0].stoneCount - 1].position(1) + cuez));
 		glColor3f(1.0, 1.0, 1.0);
 		glEnd();
 	}
@@ -313,15 +317,15 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			vec2 imp((-sin(gCueAngle) * gCuePower * gCueBallFactor),
 				(-cos(gCueAngle) * gCuePower * gCueBallFactor));
-			gTable.stones[gTable.stoneCount - 1].ApplyImpulse(imp);
+			tables[0].stones[tables[0].stoneCount - 1].ApplyImpulse(imp);
 		}
 		break;
 	}
 	case(27):
 	{
-		for (int i = 0; i < gTable.stoneCount; i++)
+		for (int i = 0; i < tables[0].stoneCount; i++)
 		{
-			gTable.stones[i].Reset();
+			tables[0].stones[i].Reset();
 		}
 		break;
 	}
@@ -449,46 +453,47 @@ void InitLights(void)
 
 void UpdateScene(int ms)
 {
-	if (gTable.AnyBallsMoving() == false) {
-		if (gDoCue == false) {
-			gTable.CheckStones();
-			std::cout << gTable.GetScores() << std::endl;
-			gTable.AddBall();
-		}
-		gDoCue = true;
-		CamSetLoc(vec3(0.0, 1, 2.1), vec3(0.0, 0.0, 0.0));
-	}
-	else {
-		gDoCue = false;
-		CamSetLoc(vec3(0.0, 5, -15 * TABLE_SCALE), vec3(0.0, 0.0, -7));
-	}
-
-	if (gDoCue)
+	for (int tab = 0; tab < tables[0].returnSheetCount(); tab++)
 	{
-		if (gCueControl[0]) gCueAngle -= ((gCueAngleSpeed * ms) / 1000);
-		if (gCueControl[1]) gCueAngle += ((gCueAngleSpeed * ms) / 1000);
-		if (gCueAngle < 0.0) gCueAngle += TWO_PI;
-		if (gCueAngle > TWO_PI) gCueAngle -= TWO_PI;
+		if (tables[tab].AnyStoneMoving() == false) {
+			if (gDoCue == false) {
+				tables[tab].CheckStones();
+				std::cout << tables[tab].GetScores() << std::endl;
+				tables[tab].AddStone();
+			}
+			gDoCue = true;
+			CamSetLoc(vec3(0.0, 1, 2.1), vec3(0.0, 0.0, 0.0));
+		}
+		else {
+			gDoCue = false;
+			CamSetLoc(vec3(0.0, 5, -15 * TABLE_SCALE), vec3(0.0, 0.0, -7));
+		}
 
-		if (gCueControl[2]) gCuePower += ((gCuePowerSpeed * ms) / 1000);
-		if (gCueControl[3]) gCuePower -= ((gCuePowerSpeed * ms) / 1000);
-		if (gCuePower > gCuePowerMax) gCuePower = gCuePowerMax;
-		if (gCuePower < gCuePowerMin) gCuePower = gCuePowerMin;
+		if (gDoCue)
+		{
+			if (gCueControl[0]) gCueAngle -= ((gCueAngleSpeed * ms) / 1000);
+			if (gCueControl[1]) gCueAngle += ((gCueAngleSpeed * ms) / 1000);
+			if (gCueAngle < 0.0) gCueAngle += TWO_PI;
+			if (gCueAngle > TWO_PI) gCueAngle -= TWO_PI;
+
+			if (gCueControl[2]) gCuePower += ((gCuePowerSpeed * ms) / 1000);
+			if (gCueControl[3]) gCuePower -= ((gCuePowerSpeed * ms) / 1000);
+			if (gCuePower > gCuePowerMax) gCuePower = gCuePowerMax;
+			if (gCuePower < gCuePowerMin) gCuePower = gCuePowerMin;
+		}
+
+		DoCamera(ms);
+
+		tables[tab].Update(ms);
+
+		glutTimerFunc(SIM_UPDATE_MS, UpdateScene, SIM_UPDATE_MS);
+		glutPostRedisplay();
 	}
-
-	DoCamera(ms);
-
-	gTable.Update(ms);
-
-	glutTimerFunc(SIM_UPDATE_MS, UpdateScene, SIM_UPDATE_MS);
-	glutPostRedisplay();
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	gTable.SetupEdges();
-	gTable.SetupFeatures();
-	gTable.AddBall();
+	tables.push_back(table());
 
 	glutInit(&argc, ((char**)argv));
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

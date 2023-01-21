@@ -1,12 +1,97 @@
 ﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   simulation.cpp
-C:\Users\Computing\Documents\GitHub\AP_Coursework\simulation.cpp(352,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Computing\Documents\GitHub\AP_Coursework\simulation.cpp(353,43): warning C4244: 'argument': conversion from 'double' to '_Ty', possible loss of data
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(251,39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(359,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,55): error C2676: binary '<': 'const _Ty' does not define this operator or a conversion to a type acceptable to the predefined operator
           with
           [
-              _Ty=float
+              _Ty=team
           ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(653,17): message : could be 'bool std::operator <(const std::multimap<_Kty,_Ty,_Pr,_Alloc> &,const std::multimap<_Kty,_Ty,_Pr,_Alloc> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::multimap<_Kty,_Ty,_Pr,_Alloc> &,const std::multimap<_Kty,_Ty,_Pr,_Alloc> &)': could not deduce template argument for 'const std::multimap<_Kty,_Ty,_Pr,_Alloc> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(420,17): message : or       'bool std::operator <(const std::map<_Kty,_Ty,_Pr,_Alloc> &,const std::map<_Kty,_Ty,_Pr,_Alloc> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::map<_Kty,_Ty,_Pr,_Alloc> &,const std::map<_Kty,_Ty,_Pr,_Alloc> &)': could not deduce template argument for 'const std::map<_Kty,_Ty,_Pr,_Alloc> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\tuple(693,27): message : or       'bool std::operator <(const std::tuple<_Types...> &,const std::tuple<_Types...> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::tuple<_Types...> &,const std::tuple<_Types...> &)': could not deduce template argument for 'const std::tuple<_Types...> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\vector(2373,30): message : or       'bool std::operator <(const std::vector<_Ty,_Alloc> &,const std::vector<_Ty,_Alloc> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::vector<_Ty,_Alloc> &,const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xutility(3599,5): message : or       'bool std::operator <(const std::move_iterator<_Iter> &,const std::move_iterator<_Iter2> &) noexcept(<expr>)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::move_iterator<_Iter> &,const std::move_iterator<_Iter2> &) noexcept(<expr>)': could not deduce template argument for 'const std::move_iterator<_Iter> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xutility(1422,5): message : or       'bool std::operator <(const std::reverse_iterator<_BidIt> &,const std::reverse_iterator<_BidIt2> &) noexcept(<expr>)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::reverse_iterator<_BidIt> &,const std::reverse_iterator<_BidIt2> &) noexcept(<expr>)': could not deduce template argument for 'const std::reverse_iterator<_BidIt> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\utility(387,27): message : or       'bool std::operator <(const std::pair<_Ty1,_Ty2> &,const std::pair<_Ty1,_Ty2> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xstddef(142,49): message : 'bool std::operator <(const std::pair<_Ty1,_Ty2> &,const std::pair<_Ty1,_Ty2> &)': could not deduce template argument for 'const std::pair<_Ty1,_Ty2> &' from 'const _Ty'
+          with
+          [
+              _Ty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\xutility(1091,16): message : see reference to function template instantiation 'bool std::_Debug_lt_pred<const std::less<team>&,const _Kty&,const _Keyty&,0>(_Pr,_Ty1,_Ty2) noexcept(<expr>)' being compiled
+          with
+          [
+              _Kty=team,
+              _Keyty=team,
+              _Pr=const std::less<team> &,
+              _Ty1=const team &,
+              _Ty2=const team &
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(196,1): message : see reference to function template instantiation 'std::_Tree_find_result<std::_Tree_node<std::pair<const team,std::vector<float,std::allocator<float>>>,std::_Default_allocator_traits<_Alloc>::void_pointer> *> std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Find_lower_bound<team>(const _Keyty &) const' being compiled
+          with
+          [
+              _Alloc=std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>,
+              _Kty=team,
+              _Ty=std::vector<float,std::allocator<float>>,
+              _Pr=std::less<team>,
+              _Keyty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(196,36): message : see reference to function template instantiation 'std::_Tree_find_result<std::_Tree_node<std::pair<const team,std::vector<float,std::allocator<float>>>,std::_Default_allocator_traits<_Alloc>::void_pointer> *> std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Find_lower_bound<team>(const _Keyty &) const' being compiled
+          with
+          [
+              _Alloc=std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>,
+              _Kty=team,
+              _Ty=std::vector<float,std::allocator<float>>,
+              _Pr=std::less<team>,
+              _Keyty=team
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(345,1): message : see reference to function template instantiation 'std::pair<std::_Tree_node<std::pair<const team,std::vector<float,std::allocator<float>>>,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::map<team,std::vector<float,std::allocator<float>>,std::less<team>,_Alloc>::_Try_emplace<const team&,>(_Keyty)' being compiled
+          with
+          [
+              _Alloc=std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>,
+              _Keyty=const team &
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(345,9): message : see reference to function template instantiation 'std::pair<std::_Tree_node<std::pair<const team,std::vector<float,std::allocator<float>>>,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::map<team,std::vector<float,std::allocator<float>>,std::less<team>,_Alloc>::_Try_emplace<const team&,>(_Keyty)' being compiled
+          with
+          [
+              _Alloc=std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>,
+              _Keyty=const team &
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\map(344,1): message : while compiling class template member function 'std::vector<float,std::allocator<float>> &std::map<team,std::vector<float,std::allocator<float>>,std::less<team>,std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>>::operator [](const team &)'
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(360,38): message : see reference to function template instantiation 'std::vector<float,std::allocator<float>> &std::map<team,std::vector<float,std::allocator<float>>,std::less<team>,std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>>::operator [](const team &)' being compiled
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(356,36): message : see reference to class template instantiation 'std::map<team,std::vector<float,std::allocator<float>>,std::less<team>,std::allocator<std::pair<const team,std::vector<float,std::allocator<float>>>>>' being compiled
+  Generating Code...
+  Compiling...
   Pool Game.cpp
   Generating Code...
-Pool Game.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  Pool Game.vcxproj -> C:\Users\Computing\Documents\GitHub\AP_Coursework\Debug\Pool Game.exe

@@ -30,6 +30,22 @@
 	  extern vec2	gPlaneNormal_Bottom;
 	  */
 
+class player {
+public:
+	char name;
+	char ip;
+};
+
+class team {
+public:
+	static std::vector<player> activePlayers; //vector of players to prevent duplication of players
+	char name;
+	vec3 colour;
+	std::vector<player> players;
+
+	void AddPlayer(player);
+};
+
 
 	  /*-----------------------------------------------------------
 		cushion class
@@ -53,7 +69,7 @@ class stone
 {
 	static int ballIndexCnt;
 public:
-	int		team;
+	team	team;
 	vec2	position;
 	vec2	velocity;
 	float	radius;
@@ -145,7 +161,13 @@ public:
   -----------------------------------------------------------*/
 class table
 {
+private:
+	float _tableScale = 0.5f;
+	int sheetPosition;
+	static int	_sheetCount;
+
 public:
+	static std::map<team, std::vector<int>> activePlayers; // map of active players to prevent duplication
 	float yScale = (7.0f / 5.0f) * TABLE_SCALE;
 	int stoneCount = 0;
 	std::vector<stone> stones;
@@ -154,17 +176,21 @@ public:
 	particleSet parts;
 	float hogLine, hackLine;
 	vec2 scoreCenter;
+	std::map<team, std::vector<int>> teams;
 
+	table();
 	void SetupEdges(void);
 	void SetupFeatures(void);
 	void Update(int ms);
-	bool AnyBallsMoving(void) const;
-	void AddBall(void);
+	bool AnyStoneMoving(void) const;
+	void AddStone(void);
 	void CheckStones(void);
 	int GetScores(void);
+	void AddPlayer(team, int);
+	int returnSheetCount(void) { return _sheetCount; };
 };
 
 /*-----------------------------------------------------------
   global table
   -----------------------------------------------------------*/
-extern table gTable;
+//extern table gTable;
