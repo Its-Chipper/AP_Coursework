@@ -22,7 +22,7 @@
 	  vec2	gPlaneNormal_Bottom(0.0,-1.0);
 	  */
 
-table gTable;
+//table gTable;
 
 static const float gRackPositionX[] = { 0.0f,0.0f,(BALL_RADIUS * 2.0f),(-BALL_RADIUS * 2.0f),(BALL_RADIUS * 4.0f) };
 static const float gRackPositionZ[] = { 0.5f,0.0f,(-BALL_RADIUS * 3.0f),(-BALL_RADIUS * 3.0f) };
@@ -55,6 +55,13 @@ void cushion::MakeCentre(void)
   ball class members
   -----------------------------------------------------------*/
 int stone::ballIndexCnt = 0;
+
+stone::stone(team _team) : position(0.0), velocity(0.0), radius(BALL_RADIUS), mass(BALL_MASS) 
+{
+	index = ballIndexCnt++;
+	stoneTeam = _team;
+	Reset();
+}
 
 void stone::Reset(void)
 {
@@ -149,7 +156,7 @@ void stone::HitPlane(const cushion& c)
 	pos += (oset * radius);
 	for (int i = 0; i < n; i++)
 	{
-		gTable.parts.AddParticle(pos);
+		//gTable.parts.AddParticle(pos);
 	}
 
 	/*
@@ -199,7 +206,7 @@ void stone::HitBall(stone& b)
 	pos += (oset * radius);
 	for (int i = 0; i < n; i++)
 	{
-		gTable.parts.AddParticle(pos);
+		//gTable.parts.AddParticle(pos);
 	}
 }
 
@@ -247,27 +254,35 @@ void particleSet::update(int ms)
 /*-----------------------------------------------------------
   table class members
   -----------------------------------------------------------*/
+std::map<team, std::vector<int>> table::activePlayers = {};
+
+table::table(int sheetNum) {
+	sheetPosition = pow(-1, float(sheetNum)) * ceil(float(sheetNum) / 2);
+	SetupEdges();
+	SetupFeatures();
+}
+
 void table::SetupEdges(void)
 {
-	cushions[0].vertices[0](0) = -yScale;
-	cushions[0].vertices[0](1) = -10;
-	cushions[0].vertices[1](0) = -yScale;
-	cushions[0].vertices[1](1) = 1;
+	cushions[0].vertices[0](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[0].vertices[0](1) = -18 * TABLE_SCALE;
+	cushions[0].vertices[1](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[0].vertices[1](1) = 2 * TABLE_SCALE;
 
-	cushions[1].vertices[0](0) = -yScale;
-	cushions[1].vertices[0](1) = 1;
-	cushions[1].vertices[1](0) = yScale;
-	cushions[1].vertices[1](1) = 1;
+	cushions[1].vertices[0](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[1].vertices[0](1) = 2 * TABLE_SCALE;
+	cushions[1].vertices[1](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[1].vertices[1](1) = 2 * TABLE_SCALE;
 
-	cushions[2].vertices[0](0) = yScale;
-	cushions[2].vertices[0](1) = 1;
-	cushions[2].vertices[1](0) = yScale;
-	cushions[2].vertices[1](1) = -10;
+	cushions[2].vertices[0](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[2].vertices[0](1) = 2 * TABLE_SCALE;
+	cushions[2].vertices[1](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[2].vertices[1](1) = -18 * TABLE_SCALE;
 
-	cushions[3].vertices[0](0) = yScale;
-	cushions[3].vertices[0](1) = -10;
-	cushions[3].vertices[1](0) = -yScale;
-	cushions[3].vertices[1](1) = -10;
+	cushions[3].vertices[0](0) = sheetPosition * yScale * 3 + yScale;
+	cushions[3].vertices[0](1) = -18 * TABLE_SCALE;
+	cushions[3].vertices[1](0) = sheetPosition * yScale * 3 - yScale;
+	cushions[3].vertices[1](1) = -18 * TABLE_SCALE;
 
 	for (int i = 0; i < NUM_CUSHIONS; i++)
 	{
@@ -277,16 +292,16 @@ void table::SetupEdges(void)
 }
 
 void table::SetupFeatures(void) {
-	features[0] = new line(vec2(-yScale, -12 * TABLE_SCALE), vec2(yScale, -12 * TABLE_SCALE)); // hog line definition
+	features[0] = new line(vec2(sheetPosition * yScale * 3 - yScale, -12 * TABLE_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -12 * TABLE_SCALE)); // hog line definition
 	hogLine = -12 * TABLE_SCALE;
-	features[1] = new line(vec2(-yScale, -17 * TABLE_SCALE), vec2(yScale, -17 * TABLE_SCALE)); // hack line definition
+	features[1] = new line(vec2(sheetPosition * yScale * 3 - yScale, -17 * TABLE_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -17 * TABLE_SCALE)); // hack line definition
 	hackLine = -17 * TABLE_SCALE;
 
-	scoreCenter = vec2(0, -15 * TABLE_SCALE);
-	features[2] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE/10);
-	features[3] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE/3);
-	features[4] = new ring(vec2(0, -15 * TABLE_SCALE), (2*TABLE_SCALE)/3);
-	features[5] = new ring(vec2(0, -15 * TABLE_SCALE), TABLE_SCALE);
+	scoreCenter = vec2(sheetPosition * yScale * 3, -15 * TABLE_SCALE);
+	features[2] = new ring(vec2(sheetPosition * yScale * 3, -15 * TABLE_SCALE), TABLE_SCALE / 10);
+	features[3] = new ring(vec2(sheetPosition * yScale * 3, -15 * TABLE_SCALE), TABLE_SCALE / 3);
+	features[4] = new ring(vec2(sheetPosition * yScale * 3, -15 * TABLE_SCALE), (2 * TABLE_SCALE) / 3);
+	features[5] = new ring(vec2(sheetPosition * yScale * 3, -15 * TABLE_SCALE), TABLE_SCALE);
 }
 
 void table::Update(int ms)
@@ -316,7 +331,7 @@ void table::Update(int ms)
 	//parts.AddParticle(pos);
 }
 
-bool table::AnyBallsMoving(void) const
+bool table::AnyStoneMoving(void) const
 {
 	//return true if any ball has a non-zero velocity
 	for (int i = 0; i < stoneCount; i++)
@@ -340,21 +355,64 @@ void table::CheckStones(void){
 	}
 }
 
-void table::AddBall(void) {
-	stones.push_back(stone());
+template<typename T>
+void pop_front(std::vector<T>& vec)
+{
+	assert(!vec.empty());
+	vec.erase(vec.begin());
+}
+
+void table::AddStone(void) {
+	stones.push_back(stone(stoneOrder[0]));
+	pop_front(stoneOrder);
+	stones[stones.size() - 1].position(0) = sheetPosition * yScale * 3;
 	stoneCount += 1;
 }
 
 int table::GetScores(void) {
-	std::map<int,std::vector<float>> scoreDict;
+	std::map<team,std::vector<float>> scoreDict;
 	int returnValue = 0;
 	for (int i = 0; i < stoneCount; i++) {
-		float score = pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2);
-		scoreDict[stones[i].team].push_back(sqrt(score));
+		float score = sqrt(pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2));
+		scoreDict[stones[i].stoneTeam].push_back(score);
 		if (sqrt(score) < TABLE_SCALE) returnValue++;
 	}
 	return returnValue;
 }
+
+void table::SetupOrder(void) {
+	if (teams.size() >= 2) {
+		stoneOrder.clear();
+		for (int i = 0; i < 4; i++) {
+			stoneOrder.push_back(teams.begin()->first);
+			stoneOrder.push_back(teams.begin()->first);
+			auto secondValue = teams.begin()++;
+			stoneOrder.push_back(secondValue->first);
+			stoneOrder.push_back(secondValue->first);
+		}
+	}
+}
+
+void table::AddPlayer(team _team, int _player) {
+	teams[_team].push_back(_player);
+	activePlayers[_team].push_back(_player);
+}
+
+void table::RemovePlayer(team _team, int _player) {
+	for (int i = activePlayers.size() - 1; i >= 0; i--) {
+		if (teams[_team][i] == _player) {
+			teams[_team].erase(teams[_team].begin() + i);
+		}
+	}
+
+	for (int i = activePlayers.size() - 1; i >= 0; i--) {
+		if (activePlayers[_team][i] == _player) {
+			activePlayers[_team].erase(activePlayers[_team].begin() + i);
+		}
+	}
+}
+
+
 
 line::line(vec2 _vertex1, vec2 _vertex2){
 	vertices[0] = _vertex1;

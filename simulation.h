@@ -2,8 +2,10 @@
   Simulation Header File
   -----------------------------------------------------------*/
 #include"vecmath.h"
+#include"teams.h"
 #include <vector>
 #include <map>
+#include <assert.h>
 
   /*-----------------------------------------------------------
 	Macros
@@ -20,6 +22,8 @@
 #define NUM_CUSHIONS	(4)
 #define NUM_FEATURES	(6)
 #define MAX_PARTICLES	(200)
+#define NUM_TABLES		(5)
+
 	/*-----------------------------------------------------------
 	  plane normals
 	  -----------------------------------------------------------*/
@@ -30,10 +34,21 @@
 	  extern vec2	gPlaneNormal_Bottom;
 	  */
 
+namespace std
+{
+	template<> struct less<team>
+	{
+		bool operator() (const team& lhs, const team& rhs) const
+		{
+			return lhs.name < rhs.name;
+		}
+	};
+}
 
-	  /*-----------------------------------------------------------
-		cushion class
-		-----------------------------------------------------------*/
+
+/*-----------------------------------------------------------
+  cushion class
+  -----------------------------------------------------------*/
 class cushion
 {
 public:
@@ -53,7 +68,7 @@ class stone
 {
 	static int ballIndexCnt;
 public:
-	int		team;
+	team	stoneTeam;
 	vec2	position;
 	vec2	velocity;
 	float	radius;
@@ -65,6 +80,7 @@ public:
 		index = ballIndexCnt++; Reset();
 	}
 
+	stone(team);
 	void Reset(void);
 	void ApplyImpulse(vec2 imp);
 	void ApplyFrictionForce(int ms);
@@ -145,7 +161,14 @@ public:
   -----------------------------------------------------------*/
 class table
 {
+	static std::map<team, std::vector<int>> activePlayers; // map of active players to prevent duplication
+
+private:
+	float _tableScale = 0.5f;
+	int sheetPosition;
+
 public:
+
 	float yScale = (7.0f / 5.0f) * TABLE_SCALE;
 	int stoneCount = 0;
 	std::vector<stone> stones;
@@ -154,17 +177,25 @@ public:
 	particleSet parts;
 	float hogLine, hackLine;
 	vec2 scoreCenter;
+	std::map<team, std::vector<int>> teams;
+	std::map<team, int> teamIt;
+	std::vector<team> stoneOrder;
+	bool doCue;
 
+	table(int);
 	void SetupEdges(void);
 	void SetupFeatures(void);
 	void Update(int ms);
-	bool AnyBallsMoving(void) const;
-	void AddBall(void);
+	bool AnyStoneMoving(void) const;
+	void AddStone(void);
 	void CheckStones(void);
 	int GetScores(void);
+	void SetupOrder(void);
+	void AddPlayer(team, int);
+	void RemovePlayer(team, int);
 };
 
 /*-----------------------------------------------------------
   global table
   -----------------------------------------------------------*/
-extern table gTable;
+  //extern table gTable;
