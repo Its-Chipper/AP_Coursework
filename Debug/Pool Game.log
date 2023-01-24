@@ -1,9 +1,11 @@
 ﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  stdafx.cpp
+  teams.cpp
   simulation.cpp
-C:\Users\Computing\Documents\GitHub\AP_Coursework\simulation.cpp(260,43): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Computing\Documents\GitHub\AP_Coursework\simulation.cpp(379,20): warning C4018: '>=': signed/unsigned mismatch
-C:\Users\Computing\Documents\GitHub\AP_Coursework\simulation.cpp(389,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
-  Skipping... (no relevant changes detected)
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(260,43): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(379,20): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(389,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Pool Game.cpp
-  Pool Game.vcxproj -> C:\Users\Computing\Documents\GitHub\AP_Coursework\Debug\Pool Game.exe
+  Generating Code...
+Pool Game.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  Pool Game.vcxproj -> C:\Users\Harry\Documents\GitHub\AP_Coursework\Debug\Pool Game.exe
