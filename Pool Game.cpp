@@ -157,6 +157,7 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 int RenderTable(size_t tab) {
 	for (int i = 0; i < tables[tab].stoneCount; i++)
 	{
+		glDisable(GL_LIGHTING);
 		glColor3f(tables[tab].stones[i].stoneTeam.colour(0), tables[tab].stones[i].stoneTeam.colour(1), tables[tab].stones[i].stoneTeam.colour(2));
 		glPushMatrix();
 		glTranslatef(tables[tab].stones[i].position(0), (BALL_RADIUS / 2.0), tables[tab].stones[i].position(1));
@@ -167,7 +168,7 @@ int RenderTable(size_t tab) {
 		glutWireSphere(tables[tab].balls[i].radius, 12, 12);
 #endif
 		glPopMatrix();
-		//glColor3f(0.0, 0.0, 1.0);
+		glColor3f(0.0, 0.0, 1.0);
 	}
 	glColor3f(1.0, 1.0, 1.0);
 
@@ -325,11 +326,12 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	{
 	case(13):
 	{
-		if (gDoCue)
+		if (localPlayer->doCue)
 		{
 			vec2 imp((-sin(gCueAngle) * gCuePower * gCueBallFactor),
 				(-cos(gCueAngle) * gCuePower * gCueBallFactor));
 			tables[0].stones[tables[0].stoneCount - 1].ApplyImpulse(imp);
+			localPlayer->doCue = false;
 		}
 		break;
 	}

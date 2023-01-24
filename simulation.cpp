@@ -363,10 +363,23 @@ void pop_front(std::vector<T>& vec)
 }
 
 void table::AddStone(void) {
-	stones.push_back(stone(stoneOrder[0]));
-	pop_front(stoneOrder);
-	stones[stones.size() - 1].position(0) = sheetPosition * yScale * 3;
-	stoneCount += 1;
+	if (stoneOrder.size() > 0) {
+		stones.push_back(stone(stoneOrder[0]));
+		pop_front(stoneOrder);
+		stones[stones.size() - 1].position(0) = sheetPosition * yScale * 3;
+		stoneCount += 1;
+	}
+	else {
+
+	}
+}
+
+void table::SetPlayer(team _team){
+	teamIt[_team]++;
+	if (teamIt[_team] >= teams[_team].size()) {
+		teamIt[_team] = 0;
+	}
+	_team.players[teams[_team][teamIt[_team]]]->doCue = true;
 }
 
 int table::GetScores(void) {
@@ -384,11 +397,12 @@ void table::SetupOrder(void) {
 	if (teams.size() >= 2) {
 		stoneOrder.clear();
 		for (int i = 0; i < 4; i++) {
-			stoneOrder.push_back(teams.begin()->first);
-			stoneOrder.push_back(teams.begin()->first);
-			auto secondValue = teams.begin()++;
-			stoneOrder.push_back(secondValue->first);
-			stoneOrder.push_back(secondValue->first);
+			auto iterator = teams.begin();
+			stoneOrder.push_back(iterator->first);
+			stoneOrder.push_back(iterator->first);
+			iterator++;
+			stoneOrder.push_back(iterator->first);
+			stoneOrder.push_back(iterator->first);
 		}
 	}
 }

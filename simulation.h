@@ -191,6 +191,7 @@ public:
 	void CheckStones(void);
 	int GetScores(void);
 	void SetupOrder(void);
+	void SetPlayer(team);
 	void AddPlayer(team, int);
 	void RemovePlayer(team, int);
 };
