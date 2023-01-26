@@ -1,13 +1,12 @@
-// Pool Game.cpp : Defines the entry point for the console application.
+﻿// Pool Game.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
 #include "stdafx.h"
-#include "simulation.h"
+#include "threaded_client.h"
 #include <glut.h>
 #include <math.h>
-#include <iostream>
-#include <thread>
+
 
 //cue variables
 float gCueAngle = 0.0;
@@ -33,14 +32,10 @@ bool gCamD = false;
 bool gCamZin = false;
 bool gCamZout = false;
 
-std::vector<table> tables;
-
-player* localPlayer;
-
-team _team;
-
 //rendering options
 #define DRAW_SOLID	(1)
+
+Client client;
 
 void DoCamera(int ms)
 {
@@ -155,17 +150,17 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 
 
 int RenderTable(size_t tab) {
-	for (int i = 0; i < tables[tab].stoneCount; i++)
+	for (int i = 0; i < gm.tables[tab].stoneCount; i++)
 	{
 		glDisable(GL_LIGHTING);
-		glColor3f(tables[tab].stones[i].stoneTeam.colour(0), tables[tab].stones[i].stoneTeam.colour(1), tables[tab].stones[i].stoneTeam.colour(2));
+		glColor3f(gm.tables[tab].stones[i].stoneTeam.colour(0), gm.tables[tab].stones[i].stoneTeam.colour(1), gm.tables[tab].stones[i].stoneTeam.colour(2));
 		glPushMatrix();
-		glTranslatef(tables[tab].stones[i].position(0), (BALL_RADIUS / 2.0), tables[tab].stones[i].position(1));
+		glTranslatef(gm.tables[tab].stones[i].position(0), (BALL_RADIUS / 2.0), gm.tables[tab].stones[i].position(1));
 		glScalef(1.0, 0.3, 1.0);
 #if DRAW_SOLID
-		glutSolidSphere(tables[tab].stones[i].radius, 32, 32);
+		glutSolidSphere(gm.tables[tab].stones[i].radius, 32, 32);
 #else
-		glutWireSphere(tables[tab].balls[i].radius, 12, 12);
+		glutWireSphere(gm.tables[tab].balls[i].radius, 12, 12);
 #endif
 		glPopMatrix();
 		glColor3f(0.0, 0.0, 1.0);
@@ -176,27 +171,27 @@ int RenderTable(size_t tab) {
 	for (int i = 0; i < NUM_CUSHIONS; i++)
 	{
 		glBegin(GL_LINE_LOOP);
-		glVertex3f(tables[tab].cushions[i].vertices[0](0), 0.0, tables[tab].cushions[i].vertices[0](1));
-		glVertex3f(tables[tab].cushions[i].vertices[0](0), 0.1, tables[tab].cushions[i].vertices[0](1));
-		glVertex3f(tables[tab].cushions[i].vertices[1](0), 0.1, tables[tab].cushions[i].vertices[1](1));
-		glVertex3f(tables[tab].cushions[i].vertices[1](0), 0.0, tables[tab].cushions[i].vertices[1](1));
+		glVertex3f(gm.tables[tab].cushions[i].vertices[0](0), 0.0, gm.tables[tab].cushions[i].vertices[0](1));
+		glVertex3f(gm.tables[tab].cushions[i].vertices[0](0), 0.1, gm.tables[tab].cushions[i].vertices[0](1));
+		glVertex3f(gm.tables[tab].cushions[i].vertices[1](0), 0.1, gm.tables[tab].cushions[i].vertices[1](1));
+		glVertex3f(gm.tables[tab].cushions[i].vertices[1](0), 0.0, gm.tables[tab].cushions[i].vertices[1](1));
 		glEnd();
 	}
 
 	for (int i = 0; i < NUM_FEATURES; i++)
 	{
-		if (line* x = dynamic_cast<line*>(tables[tab].features[i])) {
+		if (line* x = dynamic_cast<line*>(gm.tables[tab].features[i])) {
 			glBegin(GL_LINE_LOOP);
 			glVertex3f(x->vertices[0](0), 0.0, x->vertices[0](1));
 			glVertex3f(x->vertices[1](0), 0.0, x->vertices[1](1));
 			glEnd();
 		}
-		else if (ring* x = dynamic_cast<ring*>(tables[tab].features[i])) {
+		else if (ring* x = dynamic_cast<ring*>(gm.tables[tab].features[i])) {
 			DrawCircle(x->center(0), x->center(1), x->rad, 30);
 		}
 	}
 
-	for (int i = 0; i < tables[tab].parts.num; i++)
+	/*for (int i = 0; i < tables[tab].parts.num; i++)
 	{
 		glColor3f(1.0, 0.0, 0.0);
 		glPushMatrix();
@@ -207,7 +202,7 @@ int RenderTable(size_t tab) {
 		glutWireSphere(0.002f, 12, 12);
 #endif
 		glPopMatrix();
-	}
+	}*/
 
 	return(0);
 }
@@ -222,7 +217,7 @@ void RenderScene(void) {
 	//draw the ball
 	glColor3f(1.0, 1.0, 1.0);
 
-	for (size_t tab = 0; tab < tables.size(); tab++) {
+	for (size_t tab = 0; tab < gm.tables.size(); tab++) {
 		RenderTable(tab);
 	}
 
@@ -254,8 +249,8 @@ void RenderScene(void) {
 		float cuex = sin(gCueAngle) * gCuePower;
 		float cuez = cos(gCueAngle) * gCuePower;
 		glColor3f(1.0, 0.0, 0.0);
-		glVertex3f(tables[0].stones[tables[0].stoneCount - 1].position(0), (BALL_RADIUS / 2.0f), tables[0].stones[tables[0].stoneCount - 1].position(1));
-		glVertex3f((tables[0].stones[tables[0].stoneCount - 1].position(0) + cuex), (BALL_RADIUS / 2.0f), (tables[0].stones[tables[0].stoneCount - 1].position(1) + cuez));
+		glVertex3f(gm.tables[0].stones[gm.tables[0].stoneCount - 1].position(0), (BALL_RADIUS / 2.0f), gm.tables[0].stones[gm.tables[0].stoneCount - 1].position(1));
+		glVertex3f((gm.tables[0].stones[gm.tables[0].stoneCount - 1].position(0) + cuex), (BALL_RADIUS / 2.0f), (gm.tables[0].stones[gm.tables[0].stoneCount - 1].position(1) + cuez));
 		glColor3f(1.0, 1.0, 1.0);
 		glEnd();
 	}
@@ -330,16 +325,17 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			vec2 imp((-sin(gCueAngle) * gCuePower * gCueBallFactor),
 				(-cos(gCueAngle) * gCuePower * gCueBallFactor));
-			tables[0].stones[tables[0].stoneCount - 1].ApplyImpulse(imp);
+			gm.tables[0].stones[gm.tables[0].stoneCount - 1].ApplyImpulse(imp);
 			localPlayer->doCue = false;
+			client.sendImpulse(imp, 0);
 		}
 		break;
 	}
 	case(27):
 	{
-		for (int i = 0; i < tables[0].stoneCount; i++)
+		for (int i = 0; i < gm.tables[0].stoneCount; i++)
 		{
-			tables[0].stones[i].Reset();
+			gm.tables[0].stones[i].Reset();
 		}
 		break;
 	}
@@ -467,23 +463,26 @@ void InitLights(void)
 
 void UpdateScene(int ms)
 {
-	int TestVar = tables.size();
-	for (size_t tab = 0; tab < tables.size(); tab++)
+	int TestVar = gm.tables.size();
+	for (size_t tab = 0; tab < gm.tables.size(); tab++)
 	{
-		if (tables[tab].AnyStoneMoving() == false) {
-			if (tables[tab].doCue == false) {
-				tables[tab].CheckStones();
-				tables[tab].AddStone();
+		if (gm.tables[tab].AnyStoneMoving() == false) {
+			if (gm.tables[tab].doCue == false) {
+				if (gm.setUp == true) {
+					gm.tables[tab].CheckStones();
+					gm.tables[tab].AddStone();
+					client.sendAddStone(tab);
+				}
 			}
-			tables[tab].doCue = true;
+			gm.tables[tab].doCue = true;
 			CamSetLoc(vec3(0.0, 10, 2.1), vec3(0.0, 0.0, -3.0));
 		}
 		else {
-			tables[tab].doCue = false;
-			CamSetLoc(vec3(0.0, 5, -15 * TABLE_SCALE), vec3(0.0, 0.0, -7));
+			gm.tables[tab].doCue = false;
+			CamSetLoc(vec3(0.0, 5, -15 * SHEET_SCALE), vec3(0.0, 0.0, -7));
 		}
 
-		tables[tab].Update(ms);
+		gm.tables[tab].Update(ms);
 	}
 
 	if (localPlayer->doCue)
@@ -507,25 +506,24 @@ void UpdateScene(int ms)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	localPlayer = new player();
-	localPlayer->doCue = true;
+	std::string _playerName, _port, _hostName;
+	std::cout << "Player Name:";
+	std::cin >> _playerName;
 
-	player* player2 = new player();
+	localPlayer->name = _playerName;
 
-	team team1 = team();
-	team1.name = "team 1";
-	team1.AddPlayer(localPlayer);
-	team team2 = team();
-	team2.name = "team 2";
-	team2.AddPlayer(player2);
+	std::cout << std::endl << "HostName/IP:";
+	std::cin >> _hostName;
+	std::cout << std::endl << "Port:";
+	std::cin >> _port;
+	std::cout << "Conecting to " << _hostName <<" port " << _port << std::endl;
+	client.start("localhost", _port.c_str());
+	client.interact();
 
-	for (int i = 0; i < NUM_TABLES; i++) {
-		tables.push_back(table(i));
-		tables[i].AddPlayer(team1, 0); 
-		tables[i].AddPlayer(team2, 0);
-		tables[i].SetupOrder();
-		tables[i].AddStone();
-	}
+	client.sendthis("Config");//asks server for config
+
+	//gm.AutoAddPlayer(localPlayer);
+	//localPlayer->doCue = false;
 
 	glutInit(&argc, ((char**)argv));
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

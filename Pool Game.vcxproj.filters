@@ -27,6 +27,9 @@
     <ClCompile Include="teams.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="threaded_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simulation.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="teams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="threaded_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,25 @@
 ﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  stdafx.cpp
-  teams.cpp
   simulation.cpp
-C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(260,43): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(379,20): warning C4018: '>=': signed/unsigned mismatch
-C:\Users\Harry\Documents\GitHub\AP_Coursework\simulation.cpp(389,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Pool Game.cpp
-  Generating Code...
-Pool Game.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  Pool Game.vcxproj -> C:\Users\Harry\Documents\GitHub\AP_Coursework\Debug\Pool Game.exe
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(237,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(296,43): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(409,29): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(413,13): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(431,20): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(443,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(450,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(495,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(509,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(518,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(532,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(584,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(595,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(605,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(660,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(661,17): warning C4018: '>': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(665,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(666,22): warning C4018: '>': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(678,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(679,22): warning C4018: '>': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(715,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\harry\Documents\GitHub\AP_Coursework\simulation.cpp(719,20): warning C4018: '<': signed/unsigned mismatch
+  Pool Game.vcxproj -> C:\Users\harry\Documents\GitHub\AP_Coursework\Debug\Pool Game.exe
