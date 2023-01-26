@@ -31,6 +31,7 @@ float gCoeffRestitution = 0.5f;
 float gCoeffFriction = 0.03f;
 float gGravityAccn = 9.8f;
 
+//global game manager and player
 gameManager gm = gameManager();
 player* localPlayer = new player();
 
@@ -53,13 +54,13 @@ void cushion::MakeCentre(void)
 	centre /= 2.0;
 }
 
-std::string cushion::PackageCushion() {
+std::string cushion::PackageCushion() {//package up the cushion to send over network
 	std::stringstream ss;
 	ss << vertices[0](0) << " " << vertices[0](1) << " " << vertices[1](0) << " " << vertices[1](1) << " ";
 	return ss.str();
 }
 
-void cushion::UnpackCushion(std::string _str) {
+void cushion::UnpackCushion(std::string _str) {//unpack the cushion
 	std::vector<std::string> cushionVector = splitstr(_str, " ");
 
 	vertices[0] = vec2(std::stof(cushionVector[0]), std::stof(cushionVector[1]));
@@ -69,8 +70,9 @@ void cushion::UnpackCushion(std::string _str) {
 /*-----------------------------------------------------------
   ball class members
   -----------------------------------------------------------*/
-int stone::ballIndexCnt = 0;
+int stone::ballIndexCnt = 0;//global ball index
 
+//stone constructor
 stone::stone(team _team) : position(0.0), velocity(0.0), radius(BALL_RADIUS), mass(BALL_MASS) 
 {
 	index = ballIndexCnt++;
@@ -78,6 +80,7 @@ stone::stone(team _team) : position(0.0), velocity(0.0), radius(BALL_RADIUS), ma
 	Reset();
 }
 
+//reset to default position before moving
 void stone::Reset(void)
 {
 	//set velocity to zero
@@ -92,6 +95,7 @@ void stone::ApplyImpulse(vec2 imp)
 	velocity = imp;
 }
 
+//adds the friction force to the stone
 void stone::ApplyFrictionForce(int ms)
 {
 	if (velocity.Magnitude() <= 0.0) return;
@@ -163,30 +167,6 @@ void stone::HitPlane(const cushion& c)
 	double comp = velocity.Dot(c.normal) * (1.0 + gCoeffRestitution);
 	vec2 delta = -(c.normal * comp);
 	velocity += delta;
-
-	//make some particles
-	int n = (rand() % 4) + 3;
-	vec3 pos(position(0), radius / 2.0, position(1));
-	vec3 oset(c.normal(0), 0.0, c.normal(1));
-	pos += (oset * radius);
-	for (int i = 0; i < n; i++)
-	{
-		//gTable.parts.AddParticle(pos);
-	}
-
-	/*
-		//assume elastic collision
-		//find plane normal
-		vec2 planeNorm = gPlaneNormal_Left;
-		//split velocity into 2 components:
-		//find velocity component perpendicular to plane
-		vec2 perp = planeNorm*(velocity.Dot(planeNorm));
-		//find velocity component parallel to plane
-		vec2 parallel = velocity - perp;
-		//reverse perpendicular component
-		//parallel component is unchanged
-		velocity = parallel + (-perp)*gCoeffRestitution;
-	*/
 }
 
 void stone::HitBall(stone& b)
@@ -212,25 +192,16 @@ void stone::HitBall(stone& b)
 	//find new velocities by adding unchanged parallel component to new perpendicluar component
 	velocity = parallelV + (relDir * perpVNew);
 	b.velocity = parallelV2 + (relDir * perpVNew2);
-
-
-	//make some particles
-	int n = (rand() % 5) + 5;
-	vec3 pos(position(0), radius / 2.0, position(1));
-	vec3 oset(relDir(0), 0.0, relDir(1));
-	pos += (oset * radius);
-	for (int i = 0; i < n; i++)
-	{
-		//gTable.parts.AddParticle(pos);
-	}
 }
 
+//package up the stone class
 std::string stone::PackageStone() {
 	std::stringstream ss;
 	ss << ballIndexCnt << " " << stoneTeam.name << " " << position(0) << " " << position(1) << " " << velocity(0) << " " << velocity(1) << " " << radius << " " << mass << " " << index;
 	return ss.str();
 }
 
+//unpack the stone class
 void stone::UnpackStone(std::string _str) {
 	std::vector<std::string> stoneVector = splitstr(_str, " ");
 	ballIndexCnt = std::stoi(stoneVector[0]);
@@ -292,6 +263,7 @@ void particleSet::update(int ms)
   -----------------------------------------------------------*/
 std::map<team, std::vector<int>> sheet::activePlayers = {};
 
+//sheet constuctor
 sheet::sheet(int sheetNum) {
 	sheetPosition = pow(-1, float(sheetNum)) * ceil(float(sheetNum) / 2);
 	SetupEdges();
@@ -300,6 +272,7 @@ sheet::sheet(int sheetNum) {
 	teamIt[gm.teams[1]] = 0;
 }
 
+//defines the edges of the sheet
 void sheet::SetupEdges(void)
 {
 	cushions[0].vertices[0](0) = sheetPosition * yScale * 3 - yScale;
@@ -329,12 +302,14 @@ void sheet::SetupEdges(void)
 	}
 }
 
+//sets up the features
 void sheet::SetupFeatures(void) {
 	features[0] = new line(vec2(sheetPosition * yScale * 3 - yScale, -12 * SHEET_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -12 * SHEET_SCALE)); // hog line definition
 	hogLine = -12 * SHEET_SCALE;
 	features[1] = new line(vec2(sheetPosition * yScale * 3 - yScale, -17 * SHEET_SCALE), vec2(sheetPosition * yScale * 3 + yScale, -17 * SHEET_SCALE)); // hack line definition
 	hackLine = -17 * SHEET_SCALE;
 
+	//house ring definitions
 	scoreCenter = vec2(sheetPosition * yScale * 3, -15 * SHEET_SCALE);
 	features[2] = new ring(vec2(sheetPosition * yScale * 3, -15 * SHEET_SCALE), SHEET_SCALE / 10);
 	features[3] = new ring(vec2(sheetPosition * yScale * 3, -15 * SHEET_SCALE), SHEET_SCALE / 3);
@@ -380,12 +355,15 @@ bool sheet::AnyStoneMoving(void) const
 	return false;
 }
 
+//checks the positions of the stones to see if they are outside of teh hog and hack lines
 void sheet::CheckStones(void){
 	for (int i = stoneCount - 1; i >= 0; i--) {
+		//hog line check
 		if (stones[i].position(1) > hogLine) {
 			stones.erase(stones.begin() + i);
 			stoneCount--;
 		}
+		//hack line check
 		else if (stones[i].position(1) < hackLine) {
 			stones.erase(stones.begin() + i);
 			stoneCount--;
@@ -393,6 +371,7 @@ void sheet::CheckStones(void){
 	}
 }
 
+//removes the front of the vector
 template<typename T>
 void pop_front(std::vector<T>& vec)
 {
@@ -400,6 +379,7 @@ void pop_front(std::vector<T>& vec)
 	vec.erase(vec.begin());
 }
 
+//adds a stone to the sheet
 void sheet::AddStone(void) {
 	if (stoneOrder.size() > 0) {
 		stones.push_back(stone(stoneOrder[0]));
@@ -409,13 +389,16 @@ void sheet::AddStone(void) {
 		if (teamIt[stoneOrder[0]] >= teams[stoneOrder[0]].size()) {
 			teamIt[stoneOrder[0]] = 0;
 		}
+		//get the team for the gm
 		int i = 0;
 		for (i; i < gm.teams.size(); i++) {
 			if (stoneOrder[0].name == gm.teams[i].name)break;
 		}
 
+		//set the players doCue to true so that they can control the cue
 		gm.teams[i].players[teams[stoneOrder[0]][teamIt[stoneOrder[0]]]]->doCue = true;
 
+		//remove first element
 		pop_front(stoneOrder);
 
 		stones[stones.size() - 1].position(0) = sheetPosition * yScale * 3;//resets position of stone
@@ -436,11 +419,15 @@ void sheet::SetPlayer(team _team){
 	_team.players[teams[_team][teamIt[_team]]]->doCue = true;
 }
 
+//get the scores for the table
 std::map<team, int> sheet::GetScores(void) {
+	//basic definitions
 	std::map<team,std::vector<float>> scoreDict;
 	std::map<team, int> returnValue;
 	float closest = 100;
 	team closestTeam = teams.begin()->first;
+
+	//loop to find closest stone and store stones on the house
 	for (int i = 0; i < stoneCount; i++) {
 		float score = sqrt(pow((scoreCenter(0) - stones[i].position(0)), 2) + pow((scoreCenter(1) - stones[i].position(1)), 2));
 		if (score < SHEET_SCALE) {
@@ -458,6 +445,7 @@ std::map<team, int> sheet::GetScores(void) {
 	return returnValue;
 }
 
+//sets up the order the stones go in
 void sheet::SetupOrder(void) {
 	if (teams.size() >= 2) {
 		stoneOrder.clear();
@@ -475,11 +463,13 @@ void sheet::SetupOrder(void) {
 	} 
 }
 
+//add a player to the one of the sheet's team
 void sheet::AddPlayer(team _team, int _player) {
 	teams[_team].push_back(_player);
 	activePlayers[_team].push_back(_player);
 }
 
+//remove a player to the one of the sheet's team
 void sheet::RemovePlayer(team _team, int _player) {
 	for (int i = activePlayers.size() - 1; i >= 0; i--) {
 		if (teams[_team][i] == _player) {
@@ -494,6 +484,7 @@ void sheet::RemovePlayer(team _team, int _player) {
 	}
 }
 
+//packages the sheet class
 std::string sheet::PackageSheet() {
 	std::stringstream ss;
 	ss << _sheetScale << "," << sheetPosition << "," << yScale << "," << stoneCount << ",";
@@ -527,6 +518,7 @@ std::string sheet::PackageSheet() {
 	return ss.str();
 }
 
+//unpacks the sheet class
 void sheet::UnpackSheet(std::string _str) {
 	std::vector<std::string> tableVector = splitstr(_str, ",");
 
@@ -618,55 +610,64 @@ void sheet::UnpackSheet(std::string _str) {
 	//doCue = (tableVector[i] == "1");
 }
 
+//line constuctor
 line::line(vec2 _vertex1, vec2 _vertex2){
 	vertices[0] = _vertex1;
 	vertices[1] = _vertex2;
 }
 
+//package the line class
 std::string line::PackageFeature() {
 	std::stringstream ss;
 	ss << vertices[0](0) << " " << vertices[0](1) << " " << vertices[1](0) << " " << vertices[1](1) << " ";
 	return ss.str();
 }
 
+//unpack the line class
 void line::UnpackFeature(std::string _str) {
 	std::vector<std::string> lineVector = splitstr(_str, " ");
 	vertices[0] = vec2(std::stof(lineVector[0]), std::stof(lineVector[1]));
 	vertices[1] = vec2(std::stof(lineVector[2]), std::stof(lineVector[3]));
 }
 
+//ring constuctor
 ring::ring(vec2 _center, float _rad) {
 	center = _center;
 	rad = _rad;
 }
 
+//package the ring class
 std::string ring::PackageFeature() {
 	std::stringstream ss;
 	ss << center(0) << " " << center(1) << " " << rad;
 	return ss.str();
 }
-
+//unpack the ring class
 void ring::UnpackFeature(std::string _str) {
 	std::vector<std::string> ringVector = splitstr(_str, " ");
 	center = vec2(std::stof(ringVector[0]), std::stof(ringVector[1]));
 	rad = std::stof(ringVector[2]);
 }
 
-
+//game manager constructor
 gameManager::gameManager() {
 	AutoGenerateTeams(2);
 }
 
+//automatically adds the player to a team and a table
 team gameManager::AutoAddPlayer(player* _player) {
 	team returnTeam;
+	//finds if they are already in a team
 	if (std::find(teams[0].activePlayers.begin(), teams[0].activePlayers.end(), _player) == teams[0].activePlayers.end()) //checks if player is already in the active players list
 	{
+		//checks if a team has less players
 		int teamSize = teams[0].players.size();
 		for (int i = 0; i < teams.size(); i++) {
 			if (teamSize > teams[i].players.size()) {
 				teams[i].AddPlayer(_player);
 				returnTeam = teams[i];
 				int _numOnTable = gm.tables[0].teams[teams[i]].size();
+				//checks if a table has less players for the team
 				for (int x = 0; x < gm.tables.size(); x++) {
 					if (_numOnTable > gm.tables[x].teams[teams[i]].size()) {
 						gm.tables[x].AddPlayer(teams[i], teams[i].players.size() - 1);
@@ -676,6 +677,7 @@ team gameManager::AutoAddPlayer(player* _player) {
 					}
 				}
 			}
+			// assign to team[0] if they all have the same size
 			else if (i == teams.size() - 1) {
 				teams[0].AddPlayer(_player);
 				returnTeam = teams[0];
@@ -694,6 +696,7 @@ team gameManager::AutoAddPlayer(player* _player) {
 	return returnTeam;
 }
 
+//auto generates a number teams 
 void gameManager::AutoGenerateTeams(int _numTeams) {
 	teams.clear();
 	for (int i = 0; i < _numTeams; i++) {
@@ -701,6 +704,7 @@ void gameManager::AutoGenerateTeams(int _numTeams) {
 	}
 }
 
+//generates teams by the inputs
 void gameManager::GenerateTeam(std::string _name, vec3 _colour) {
 	team newTeam = team();
 	newTeam.name = _name;
@@ -708,12 +712,14 @@ void gameManager::GenerateTeam(std::string _name, vec3 _colour) {
 	teams.push_back(newTeam);
 }
 
+//generates the number of tables given
 void gameManager::GenerateTables(int _num) {
 	for (int i = 0; i < _num; i++) {
 		tables.push_back(sheet(i));
 	}
 }
 
+//package the game manager
 std::string gameManager::PackageGM() {
 	std::stringstream ss;
 	ss << "C:" << teams.size() << ":";
@@ -728,6 +734,7 @@ std::string gameManager::PackageGM() {
 	return ss.str();
 }
 
+//unpack the game manager
 void gameManager::UnpackGM(std::string _charString) {
 	_charString  = splitstr(_charString, "&")[0];//removes any extra info sent
 	std::vector<std::string> strVector = splitstr(_charString, ":");//breaks apart the char string into the indiviual segments of infomation

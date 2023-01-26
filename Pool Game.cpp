@@ -37,27 +37,27 @@ bool gCamZout = false;
 
 Client client;
 
-void DoCamera(int ms)
+void DoCamera(int ms)// cam mover
 {
 	static const vec3 up(0.0, 1.0, 0.0);
 
 	if (gCamRotate)
 	{
-		if (gCamL)
+		if (gCamL)//rotate cam left
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localL = up.Cross(camDir);
 			vec3 inc = (localL * ((gCamRotSpeed * ms) / 1000.0));
 			gCamLookAt = gCamPos + camDir + inc;
 		}
-		if (gCamR)
+		if (gCamR)//right
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = up.Cross(camDir);
 			vec3 inc = (localR * ((gCamRotSpeed * ms) / 1000.0));
 			gCamLookAt = gCamPos + camDir - inc;
 		}
-		if (gCamU)
+		if (gCamU)// up
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = camDir.Cross(up);
@@ -65,7 +65,7 @@ void DoCamera(int ms)
 			vec3 inc = (localUp * ((gCamMoveSpeed * ms) / 1000.0));
 			gCamLookAt = gCamPos + camDir + inc;
 		}
-		if (gCamD)
+		if (gCamD)// down
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = camDir.Cross(up);
@@ -76,7 +76,7 @@ void DoCamera(int ms)
 	}
 	else
 	{
-		if (gCamL)
+		if (gCamL)//move cam left
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localL = up.Cross(camDir);
@@ -84,7 +84,7 @@ void DoCamera(int ms)
 			gCamPos += inc;
 			gCamLookAt += inc;
 		}
-		if (gCamR)
+		if (gCamR)//move cam right
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = camDir.Cross(up);
@@ -92,7 +92,7 @@ void DoCamera(int ms)
 			gCamPos += inc;
 			gCamLookAt += inc;
 		}
-		if (gCamU)
+		if (gCamU)//move cam up
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = camDir.Cross(up);
@@ -101,7 +101,7 @@ void DoCamera(int ms)
 			gCamPos += inc;
 			gCamLookAt += inc;
 		}
-		if (gCamD)
+		if (gCamD)//move cam down
 		{
 			vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 			vec3 localR = camDir.Cross(up);
@@ -112,14 +112,14 @@ void DoCamera(int ms)
 		}
 	}
 
-	if (gCamZin)
+	if (gCamZin)//zoom in
 	{
 		vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 		vec3 inc = (camDir * ((gCamMoveSpeed * ms) / 1000.0));
 		gCamPos += inc;
 		gCamLookAt += inc;
 	}
-	if (gCamZout)
+	if (gCamZout)//zoom out
 	{
 		vec3 camDir = (gCamLookAt - gCamPos).Normalised();
 		vec3 inc = (camDir * ((gCamMoveSpeed * ms) / 1000.0));
@@ -128,15 +128,15 @@ void DoCamera(int ms)
 	}
 }
 
-void CamSetLoc(vec3 _position, vec3 _lookat) {
+void CamSetLoc(vec3 _position, vec3 _lookat) {//move cam to a set location
 	gCamPos = _position;
 	gCamLookAt = _lookat;
 }
 
-void DrawCircle(float cx, float cy, float r, int num_segments)
+void DrawCircle(float cx, float cy, float r, int num_segments)//draws the rings
 {
 	glBegin(GL_LINE_LOOP);
-	for (int seg = 0; seg < num_segments; seg++)
+	for (int seg = 0; seg < num_segments; seg++)//draws each segment of the ring
 	{
 		float theta = 2.0f * 3.1415926f * float(seg) / float(num_segments);//get the current angle
 
@@ -149,14 +149,15 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 }
 
 
-int RenderTable(size_t tab) {
+int RenderTable(size_t tab) {//render table function
 	for (int i = 0; i < gm.tables[tab].stoneCount; i++)
 	{
 		glDisable(GL_LIGHTING);
-		glColor3f(gm.tables[tab].stones[i].stoneTeam.colour(0), gm.tables[tab].stones[i].stoneTeam.colour(1), gm.tables[tab].stones[i].stoneTeam.colour(2));
+		glColor3f(gm.tables[tab].stones[i].stoneTeam.colour(0), gm.tables[tab].stones[i].stoneTeam.colour(1), gm.tables[tab].stones[i].stoneTeam.colour(2));// colour stone to team colour
+		//drawing of the stones
 		glPushMatrix();
 		glTranslatef(gm.tables[tab].stones[i].position(0), (BALL_RADIUS / 2.0), gm.tables[tab].stones[i].position(1));
-		glScalef(1.0, 0.3, 1.0);
+		glScalef(1.0, 0.3, 1.0);//scaled so it looks more flat ontop
 #if DRAW_SOLID
 		glutSolidSphere(gm.tables[tab].stones[i].radius, 32, 32);
 #else
@@ -168,8 +169,9 @@ int RenderTable(size_t tab) {
 	glColor3f(1.0, 1.0, 1.0);
 
 	//draw the table
-	for (int i = 0; i < NUM_CUSHIONS; i++)
+	for (int i = 0; i < NUM_CUSHIONS; i++)//cushion loop
 	{
+		//draw each vertx of the cushion
 		glBegin(GL_LINE_LOOP);
 		glVertex3f(gm.tables[tab].cushions[i].vertices[0](0), 0.0, gm.tables[tab].cushions[i].vertices[0](1));
 		glVertex3f(gm.tables[tab].cushions[i].vertices[0](0), 0.1, gm.tables[tab].cushions[i].vertices[0](1));
@@ -178,8 +180,10 @@ int RenderTable(size_t tab) {
 		glEnd();
 	}
 
+	//feature loop to draw the rings and lines
 	for (int i = 0; i < NUM_FEATURES; i++)
 	{
+		//trys to cast as a line if it does uses the line drawer else uses the ring drawer function
 		if (line* x = dynamic_cast<line*>(gm.tables[tab].features[i])) {
 			glBegin(GL_LINE_LOOP);
 			glVertex3f(x->vertices[0](0), 0.0, x->vertices[0](1));
@@ -190,24 +194,10 @@ int RenderTable(size_t tab) {
 			DrawCircle(x->center(0), x->center(1), x->rad, 30);
 		}
 	}
-
-	/*for (int i = 0; i < tables[tab].parts.num; i++)
-	{
-		glColor3f(1.0, 0.0, 0.0);
-		glPushMatrix();
-		glTranslatef(tables[tab].parts.particles[i]->position(0), tables[tab].parts.particles[i]->position(1), tables[tab].parts.particles[i]->position(2));
-#if DRAW_SOLID
-		glutSolidSphere(0.002f, 32, 32);
-#else
-		glutWireSphere(0.002f, 12, 12);
-#endif
-		glPopMatrix();
-	}*/
-
 	return(0);
 }
 
-void RenderScene(void) {
+void RenderScene(void) {//main render loop function
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//set camera
@@ -220,27 +210,6 @@ void RenderScene(void) {
 	for (size_t tab = 0; tab < gm.tables.size(); tab++) {
 		RenderTable(tab);
 	}
-
-	/*
-	glBegin(GL_LINE_LOOP);
-	glVertex3f (TABLE_X, 0.0, -TABLE_Z);
-	glVertex3f (TABLE_X, 0.1, -TABLE_Z);
-	glVertex3f (TABLE_X, 0.1, TABLE_Z);
-	glVertex3f (TABLE_X, 0.0, TABLE_Z);
-	glEnd();
-	glBegin(GL_LINE_LOOP);
-	glVertex3f (TABLE_X, 0.0, -TABLE_Z);
-	glVertex3f (TABLE_X, 0.1, -TABLE_Z);
-	glVertex3f (-TABLE_X, 0.1, -TABLE_Z);
-	glVertex3f (-TABLE_X, 0.0, -TABLE_Z);
-	glEnd();
-	glBegin(GL_LINE_LOOP);
-	glVertex3f (TABLE_X, 0.0, TABLE_Z);
-	glVertex3f (TABLE_X, 0.1, TABLE_Z);
-	glVertex3f (-TABLE_X, 0.1, TABLE_Z);
-	glVertex3f (-TABLE_X, 0.0, TABLE_Z);
-	glEnd();
-	*/
 
 	//draw the cue
 	if (localPlayer->doCue)
@@ -261,6 +230,7 @@ void RenderScene(void) {
 	glutSwapBuffers();
 }
 
+//Input function
 void SpecKeyboardFunc(int key, int x, int y)
 {
 	switch (key)
@@ -288,6 +258,7 @@ void SpecKeyboardFunc(int key, int x, int y)
 	}
 }
 
+// removal of input function
 void SpecKeyboardUpFunc(int key, int x, int y)
 {
 	switch (key)
@@ -315,6 +286,7 @@ void SpecKeyboardUpFunc(int key, int x, int y)
 	}
 }
 
+//gets key presses
 void KeyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key)
@@ -378,6 +350,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 
 }
 
+//gets removal of key presses
 void KeyboardUpFunc(unsigned char key, int x, int y)
 {
 	switch (key)
@@ -420,6 +393,7 @@ void KeyboardUpFunc(unsigned char key, int x, int y)
 	}
 }
 
+//chaing of window size
 void ChangeSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -441,6 +415,7 @@ void ChangeSize(int w, int h) {
 	gluLookAt(gCamPos(0), gCamPos(1), gCamPos(2), gCamLookAt(0), gCamLookAt(1), gCamLookAt(2), 0.0f, 1.0f, 0.0f);
 }
 
+//deafault lights
 void InitLights(void)
 {
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -461,30 +436,36 @@ void InitLights(void)
 	glEnable(GL_DEPTH_TEST);
 }
 
+//main update loop
 void UpdateScene(int ms)
 {
-	int TestVar = gm.tables.size();
+	//for each table check if any stones are moving
 	for (size_t tab = 0; tab < gm.tables.size(); tab++)
 	{
 		if (gm.tables[tab].AnyStoneMoving() == false) {
 			if (gm.tables[tab].doCue == false) {
+				//if master client (gm.setUP)
 				if (gm.setUp == true) {
+					//add stones if none moving
 					gm.tables[tab].CheckStones();
 					gm.tables[tab].AddStone();
 					client.sendAddStone(tab);
 				}
 			}
+			//sets tables cue to true
 			gm.tables[tab].doCue = true;
-			CamSetLoc(vec3(0.0, 10, 2.1), vec3(0.0, 0.0, -3.0));
+			CamSetLoc(vec3(0.0, 10, 2.1), vec3(0.0, 0.0, -3.0));//move cam (high to see all tables)
 		}
 		else {
 			gm.tables[tab].doCue = false;
 			CamSetLoc(vec3(0.0, 5, -15 * SHEET_SCALE), vec3(0.0, 0.0, -7));
 		}
 
+		//update table call
 		gm.tables[tab].Update(ms);
 	}
 
+	//cue controls
 	if (localPlayer->doCue)
 	{
 		if (gCueControl[0]) gCueAngle -= ((gCueAngleSpeed * ms) / 1000);
@@ -500,12 +481,15 @@ void UpdateScene(int ms)
 
 	DoCamera(ms);
 
+	//sets a timer to recall the updateScene function
 	glutTimerFunc(SIM_UPDATE_MS, UpdateScene, SIM_UPDATE_MS);
 	glutPostRedisplay();
 }
 
+//main function
 int _tmain(int argc, _TCHAR* argv[])
 {
+	//client inputs
 	std::string _playerName, _port, _hostName;
 	std::cout << "Player Name:";
 	std::cin >> _playerName;
@@ -517,14 +501,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << std::endl << "Port:";
 	std::cin >> _port;
 	std::cout << "Conecting to " << _hostName <<" port " << _port << std::endl;
+	//opening the connection
 	client.start("localhost", _port.c_str());
 	client.interact();
 
 	client.sendthis("Config");//asks server for config
 
-	//gm.AutoAddPlayer(localPlayer);
-	//localPlayer->doCue = false;
-
+	//starting the openGL window and starting the updatescene loop
 	glutInit(&argc, ((char**)argv));
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);

@@ -101,11 +101,11 @@ void Client::terminate() {
 
 void Client::handlemsg(std::string _msg) {
 
-	if (std::string(_msg).substr(0, 6) == "Config") {
+	if (std::string(_msg).substr(0, 6) == "Config") {//hadling of a config message
 		if (gm.setUp == true) {
-			sendthis(gm.PackageGM().c_str());
+			sendthis(gm.PackageGM().c_str());//return the current config to new user
 		}
-		else {
+		else {//if config not setup, set it up
 			printf("Create Config");
 			gm.AutoGenerateTeams(2);
 			gm.GenerateTables(5);
@@ -117,28 +117,28 @@ void Client::handlemsg(std::string _msg) {
 			gm.setUp = true;
 		}
 	}
-	else if (_msg[0] == 'C') {
-		gm.UnpackGM(_msg);
-		team _localTeam = gm.AutoAddPlayer(localPlayer);
-		if (gm.setUp == false) {
+	else if (_msg[0] == 'C') {//config reciving
+		gm.UnpackGM(_msg);//unpakc the config string
+		team _localTeam = gm.AutoAddPlayer(localPlayer);//add local player to a team
+		if (gm.setUp == false) {//return the new players team if not the master socket
 			gm.setUp == true;
 			sendAddNewPlayer(localPlayer, _localTeam.name);
 		}
 	}
-	else if (_msg[0] == 'I') {
+	else if (_msg[0] == 'I') {//add impulse command
 		_msg = splitstr(_msg, "$")[0];
-		std::vector<std::string> splitMsg = splitstr(_msg, ":");
-		vec2 imp = vec2(std::stof(splitMsg[1]), std::stof(splitMsg[2]));
-		int tabIndex = std::stoi(splitMsg[3]);
-		gm.tables[tabIndex].stones[gm.tables[tabIndex].stoneCount - 1].ApplyImpulse(imp);
+		std::vector<std::string> splitMsg = splitstr(_msg, ":");//break data into chunks
+		vec2 imp = vec2(std::stof(splitMsg[1]), std::stof(splitMsg[2]));//get impulse
+		int tabIndex = std::stoi(splitMsg[3]);//get sheet index
+		gm.tables[tabIndex].stones[gm.tables[tabIndex].stoneCount - 1].ApplyImpulse(imp);//add the impluse to the table
 	}
-	else if (_msg[0] == 'A') {
+	else if (_msg[0] == 'A') {//add stone command
 		_msg = splitstr(_msg, "$")[0];
 		std::vector<std::string> splitMsg = splitstr(_msg, ":");
 		gm.tables[std::stoi(splitMsg[1])].CheckStones();
 		gm.tables[std::stoi(splitMsg[1])].AddStone();
 	}
-	else if (_msg[0] == 'P') {
+	else if (_msg[0] == 'P') {//add player command
 		_msg = splitstr(_msg, "$")[0];
 		std::vector<std::string> splitMsg = splitstr(_msg, ":");
 		player* newPlayer = new player();
@@ -150,6 +150,8 @@ void Client::handlemsg(std::string _msg) {
 		}
 	}
 }
+
+//send Commands
 
 void Client::sendImpulse(vec2 _imp, int _tableInd) {
 	std::stringstream ss;

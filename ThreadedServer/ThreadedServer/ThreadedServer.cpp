@@ -127,16 +127,16 @@ void Server::interact() {
 		iResult = recv(info::ClientSocket[clientid], recvbuf, recvbuflen, 0);
 		if (iResult > 0) {
 			printf("Client %d says: %s\n", portnum, recvbuf);
-			if (std::string(recvbuf).substr(0, 6) == "Config") {
+			if (std::string(recvbuf).substr(0, 6) == "Config") {// listening for config command
 				//info::mtx.lock();
 				printf("broadcasting for Config\n");
-				iSendResult = send(info::ClientSocket[0], recvbuf, iResult, 0);
+				iSendResult = send(info::ClientSocket[0], recvbuf, iResult, 0);// send config to 'master' socket
 				if (iSendResult == SOCKET_ERROR) {
 					printf("No conection on first socket");
 				}
 				//info::mtx.unlock();
 			}
-			else {
+			else {//broadcast to all other users
 				info::mtx.lock();
 				printf("broadcasting\n");
 				for (int i = 0; i < MAX_NUM_CLIENTS; i++) {

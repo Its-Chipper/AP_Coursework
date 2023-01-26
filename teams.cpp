@@ -1,5 +1,6 @@
 #include "teams.h"
 
+//random string generator
 std::string gen_random(const int len) {
 	static const char alphanum[] =
 		"0123456789"
@@ -15,8 +16,10 @@ std::string gen_random(const int len) {
 	return tmp_s;
 }
 
+//global player ID
 int player::IDcnt = 0;
 
+//player constructor
 player::player() {
 	ID = IDcnt;
 	IDcnt++;
@@ -25,12 +28,14 @@ player::player() {
 	tableID = -1;
 }
 
+//package the player class
 std::string player::PackagePlayer() {
 	std::stringstream ss;
 	ss << IDcnt << " " << ID << " " << doCue << " " << name << " " << tableID;
 	return ss.str();
 }
 
+//unpack the player class
 void player::UnpackPlayer(std::string _str) {
 	std::vector<std::string> playerVector = splitstr(_str, " ");
 	IDcnt = std::stoi(playerVector[0]);
@@ -40,8 +45,10 @@ void player::UnpackPlayer(std::string _str) {
 	tableID = std::stoi(playerVector[4]);
 }
 
+//global active player vector
 std::vector<player*> team::activePlayers = {};
 
+//team constructor
 team::team() {
 	name = gen_random(5);
 	players = {};
@@ -52,11 +59,13 @@ team::team() {
 	}
 }
 
+//add player to the team
 void team::AddPlayer(player* _player) {
 	players.push_back(_player);
 	activePlayers.push_back(_player);
 }
 
+//remove player from the team
 void team::RemovePlayer(player* _player) {
 	for (int i = activePlayers.size() - 1; i >= 0; i--) {
 		if (players[i] == _player) {
@@ -71,6 +80,7 @@ void team::RemovePlayer(player* _player) {
 	}
 }
 
+//delete player pointer and the data 
 void team::DeletePlayer(player* _player) {
 	for (int i = players.size() - 1; i >= 0; i--) {
 		if (players[i] == _player) {
@@ -87,6 +97,7 @@ void team::DeletePlayer(player* _player) {
 	delete _player;
 }
 
+//packages the team class
 std::string team::PackageTeam() {
 	std::stringstream ss;
 	ss << name << "," << colour(0) << "," << colour(1) << "," << colour(2) << "," << players.size() << ",";
@@ -97,6 +108,7 @@ std::string team::PackageTeam() {
 	return ss.str();
 }
 
+//unpacks the team class
 void team::UnpackTeam(std::string _str) {
 
 	//clear all players from memory before reseting values
@@ -120,17 +132,21 @@ void team::UnpackTeam(std::string _str) {
 }
 
 
-
+//split string function to seperate strings by deliminator
 std::vector<std::string> splitstr(std::string str, std::string deli)
 {
+	//default variables
 	std::vector<std::string> returnValue;
 	int start = 0;
 	int end = str.find(deli);
+
+	//loop to find all the delimators
 	while (end != -1) {
 		returnValue.push_back(str.substr(start, end - start));
 		start = end + deli.size();
 		end = str.find(deli, start);
 	}
+	//append last section
 	returnValue.push_back(str.substr(start, str.size()));
 	return returnValue;
 }
