@@ -16,7 +16,7 @@
 #pragma comment (lib, "Ws2_32.lib")
 
 #define DEFAULT_BUFLEN 4096
-#define MAX_NUM_CLIENTS 3
+#define MAX_NUM_CLIENTS 2
 
 namespace info {
 	std::mutex mtx;
